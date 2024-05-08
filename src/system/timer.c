@@ -24,6 +24,8 @@
 #include "board.h"
 #include "rtc-board.h"
 #include "timer.h"
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(timer, LOG_LEVEL_DBG);
 
 /*!
  * Safely execute call back
@@ -101,6 +103,7 @@ void TimerSetContext( TimerEvent_t *obj, void* context )
 
 void TimerStart( TimerEvent_t *obj )
 {
+    LOG_DBG("Starting timer %p", obj);
     uint32_t elapsedTime = 0;
 
     CRITICAL_SECTION_BEGIN( );
@@ -213,6 +216,7 @@ void TimerIrqHandler( void )
         cur = TimerListHead;
         TimerListHead = TimerListHead->Next;
         cur->IsStarted = false;
+        LOG_DBG("Executing timer %p callback", cur);
         ExecuteCallBack( cur->Callback, cur->Context );
     }
 
@@ -222,6 +226,7 @@ void TimerIrqHandler( void )
         cur = TimerListHead;
         TimerListHead = TimerListHead->Next;
         cur->IsStarted = false;
+        LOG_DBG("Executing timer %p callback", cur);
         ExecuteCallBack( cur->Callback, cur->Context );
     }
 
@@ -234,6 +239,7 @@ void TimerIrqHandler( void )
 
 void TimerStop( TimerEvent_t *obj )
 {
+    LOG_DBG("Stopping timer %p", obj);
     CRITICAL_SECTION_BEGIN( );
 
     TimerEvent_t* prev = TimerListHead;
@@ -327,6 +333,7 @@ void TimerReset( TimerEvent_t *obj )
 
 void TimerSetValue( TimerEvent_t *obj, uint32_t value )
 {
+    LOG_DBG("Setting timer %p value to %u", obj, value);
     uint32_t minValue = 0;
     uint32_t ticks = RtcMs2Tick( value );
 

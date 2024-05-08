@@ -27,6 +27,8 @@
 #include "delay.h"
 #include "sx126x.h"
 #include "sx126x-board.h"
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(sx126x_mac, LOG_LEVEL_DBG);
 
 /*!
  * \brief Internal frequency of the radio
@@ -162,6 +164,7 @@ uint8_t SX126xGetPayload( uint8_t *buffer, uint8_t *size,  uint8_t maxSize )
 
 void SX126xSendPayload( uint8_t *payload, uint8_t size, uint32_t timeout )
 {
+    LOG_HEXDUMP_ERR(payload, size, "SX126xSendPayload");
     SX126xSetPayload( payload, size );
     SX126xSetTx( timeout );
 }
@@ -289,6 +292,7 @@ void SX126xSetFs( void )
 
 void SX126xSetTx( uint32_t timeout )
 {
+    LOG_ERR("SX126xSetTx (timeout=%d)", timeout);
     uint8_t buf[3];
 
     SX126xSetOperatingMode( MODE_TX );
@@ -496,6 +500,7 @@ void SX126xSetDio3AsTcxoCtrl( RadioTcxoCtrlVoltage_t tcxoVoltage, uint32_t timeo
 
 void SX126xSetRfFrequency( uint32_t frequency )
 {
+    LOG_ERR("SX126xSetRfFrequency (frequency=%d)", frequency);
     uint8_t buf[4];
 
     if( ImageCalibrated == false )

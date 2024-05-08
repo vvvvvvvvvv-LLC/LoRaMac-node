@@ -47,6 +47,8 @@
 #include "radio.h"
 
 #include "LoRaMac.h"
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(LoRaMac, LOG_LEVEL_DBG);
 
 /*!
  * Maximum PHY layer payload size
@@ -2850,6 +2852,7 @@ LoRaMacStatus_t SendReJoinReq( JoinReqIdentifier_t joinReqType )
     }
 
     // Schedule frame
+    LOG_ERR("Scheduling Tx");
     status = ScheduleTx( allowDelayedTx );
     return status;
 }
@@ -3046,6 +3049,7 @@ static LoRaMacStatus_t ScheduleTx( bool allowDelayedTx )
     }
 
     // Try to send now
+    LOG_ERR("Sending frame now");
     return SendFrameOnChannel( MacCtx.Channel );
 }
 
@@ -3454,6 +3458,7 @@ LoRaMacStatus_t SendFrameOnChannel( uint8_t channel )
     MacCtx.ResponseTimeoutStartTime = 0;
 
     // Send now
+    LOG_ERR("Radio.Send!");
     Radio.Send( MacCtx.PktBuffer, MacCtx.PktBufferLen );
 
     return LORAMAC_STATUS_OK;
@@ -4308,6 +4313,7 @@ LoRaMacStatus_t LoRaMacMibGetRequestConfirm( MibRequestConfirm_t* mibGet )
 
 LoRaMacStatus_t LoRaMacMibSetRequestConfirm( MibRequestConfirm_t* mibSet )
 {
+    LOG_ERR("LoRaMacMibSetRequestConfirm %d", mibSet->Type);
     LoRaMacStatus_t status = LORAMAC_STATUS_OK;
     ChanMaskSetParams_t chanMaskSet;
     VerifyParams_t verify;
@@ -5327,6 +5333,7 @@ LoRaMacStatus_t LoRaMacMlmeRequest( MlmeReq_t* mlmeRequest )
 
                 queueElement.Status = LORAMAC_EVENT_INFO_STATUS_JOIN_FAIL;
 
+                LOG_ERR("Sending JOIN_REQ\n");
                 status = SendReJoinReq( JOIN_REQ );
 
                 if( status != LORAMAC_STATUS_OK )
