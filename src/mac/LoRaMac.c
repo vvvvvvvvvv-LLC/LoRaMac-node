@@ -3007,6 +3007,12 @@ static LoRaMacStatus_t ScheduleTx( bool allowDelayedTx )
         nextChan.Joined = false;
     }
 
+#ifdef CONFIG_LORAMAC_BUG_21_WORKAROUND
+    // BUG (#21): For some unknown reason, unless you call RegionNextChannel twice, the first time you attempt
+    // an OTAA join, the join request will consistently fail. Unclear if there are negative side effects to
+    // this workaround. It is also possible this is actually a bug in the network server config.
+    RegionNextChannel( Nvm.MacGroup2.Region, &nextChan, &MacCtx.Channel, &MacCtx.DutyCycleWaitTime, &Nvm.MacGroup1.AggregatedTimeOff );
+#endif
     // Select channel
     status = RegionNextChannel( Nvm.MacGroup2.Region, &nextChan, &MacCtx.Channel, &MacCtx.DutyCycleWaitTime, &Nvm.MacGroup1.AggregatedTimeOff );
 
